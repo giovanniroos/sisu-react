@@ -3,12 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Trophy, RotateCcw, X, Crown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getHighScore } from '../utils/scores';
+import { useLocation } from 'react-router-dom';
 
 function ScorePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { score, isNewHighScore } = useParams();
   const finalScore = parseInt(score || '0', 10);
-  const previousHighScore = React.useRef(getHighScore('multiplication'));
+  const isChallengeType = location.state?.from === 'flash' ? 'multiplication_flash' : 'multiplication_count_down';
+  const previousHighScore = React.useRef(getHighScore(isChallengeType));
   const isHighScore = isNewHighScore === 'true';
 
   useEffect(() => {
@@ -65,7 +68,7 @@ function ScorePage() {
         </div>
 
         <button
-          onClick={() => navigate('/multiplication')}
+          onClick={() => navigate(isChallengeType === 'multiplication_flash' ? '/multiplication-flash' : '/multiplication')}
           className="bg-purple-600 text-white rounded-lg px-6 py-3 font-bold flex items-center justify-center w-full hover:bg-purple-700"
         >
           <RotateCcw className="w-5 h-5 mr-2" />

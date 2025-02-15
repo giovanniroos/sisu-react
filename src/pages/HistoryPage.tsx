@@ -38,13 +38,6 @@ function HistoryPage() {
     }
   }, [navigate]);
   
-  const scores = getScoresByType(activeTab)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .map(score => ({
-      ...score,
-      formattedDate: formatDate(score.date)
-    }));
-
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -99,48 +92,105 @@ function HistoryPage() {
           </div>
         </div>
 
-        {/* Scrollable Graph Container */}
-        <div className="p-6 pt-0">
-          <div className="overflow-x-auto">
-            <div className="min-w-[800px]">
-              {scores.length > 0 ? (
-                <div className="h-[400px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={scores}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                      <XAxis
-                        dataKey="formattedDate"
-                        tick={{ fontSize: 12 }}
-                        angle={-45}
-                        textAnchor="end"
-                        height={70}
-                        interval={0}
-                        padding={{ left: 0, right: 0 }}
-                      />
-                      <YAxis />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Bar
-                        dataKey="score"
-                        fill="#8B5CF6"
-                        isAnimationActive={false}
-                        barSize={8}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  No scores recorded for {CHALLENGE_NAMES[activeTab]} yet.
-                  {activeTab !== 'multiplication' && (
-                    <p className="mt-2 text-sm">This challenge is coming soon!</p>
-                  )}
-                </div>
-              )}
+        {/* Tab Content */}
+        <div className="p-6">
+          {activeTab === 'multiplication' ? (
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Countdown Challenge Graph */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Countdown Challenge</h2>
+                {getScoresByType('multiplication_count_down').length > 0 ? (
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={getScoresByType('multiplication_count_down')
+                          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .map(score => ({
+                            ...score,
+                            formattedDate: formatDate(score.date)
+                          }))}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                        <XAxis
+                          dataKey="formattedDate"
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={70}
+                          interval={0}
+                        />
+                        <YAxis />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar
+                          dataKey="score"
+                          fill="#8B5CF6"
+                          isAnimationActive={false}
+                          barSize={8}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    No scores recorded yet.
+                  </div>
+                )}
+              </div>
+              
+              {/* Flash Challenge Graph */}
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Flash Challenge</h2>
+                {getScoresByType('multiplication_flash').length > 0 ? (
+                  <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={getScoresByType('multiplication_flash')
+                          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+                          .map(score => ({
+                            ...score,
+                            formattedDate: formatDate(score.date)
+                          }))}
+                        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                        <XAxis
+                          dataKey="formattedDate"
+                          tick={{ fontSize: 12 }}
+                          angle={-45}
+                          textAnchor="end"
+                          height={70}
+                          interval={0}
+                        />
+                        <YAxis />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Bar
+                          dataKey="score"
+                          fill="#8B5CF6"
+                          isAnimationActive={false}
+                          barSize={8}
+                        />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-gray-500">
+                    No scores recorded yet.
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              Coming soon!
+            </div>
+          )}
+        
+          {activeTab !== 'multiplication' && (
+            <div className="text-center text-gray-500 mt-4 invisible">
+              More challenges coming soon!
+            </div>
+          )}
         </div>
       </div>
     </div>

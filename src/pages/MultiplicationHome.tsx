@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Timer } from 'lucide-react';
+import { X, Timer, Zap } from 'lucide-react';
 import { getUserProfile } from '../utils/user';
 
 function MultiplicationHome() {
@@ -42,8 +42,16 @@ function MultiplicationHome() {
           </button>
           
           <button
+            onClick={() => navigate('/multiplication-flash')}
+            className="w-full bg-white text-purple-600 rounded-lg px-6 py-4 font-bold hover:bg-gray-50 transition-colors shadow-lg flex items-center justify-center space-x-3"
+          >
+            <Zap className="w-6 h-6" />
+            <span>Flash challenge</span>
+          </button>
+          
+          <button
             disabled
-            className="w-full bg-white/50 text-gray-400 rounded-lg px-6 py-4 font-bold cursor-not-allowed"
+            className="w-full bg-white/50 text-gray-400 rounded-lg px-6 py-4 font-bold cursor-not-allowed invisible"
           >
             More challenges coming soon...
           </button>

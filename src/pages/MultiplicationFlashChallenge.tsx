@@ -3,14 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { Timer, Trophy, X } from 'lucide-react';
 import { saveScore, getHighScore } from '../utils/scores';
 import { getUserProfile } from '../utils/user';
+import { useRef } from 'react';
 
-function MultiplicationCountDownChallenge() {
+const TOTAL_PROBLEMS = 10;
+const TIME_PER_PROBLEM = 5;
+const MIN_NUMBER = 2;
+const MAX_NUMBER = 12;
+
+function MultiplicationFlashChallenge() {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(100);
+  const [timeLeft, setTimeLeft] = useState(TIME_PER_PROBLEM);
   const [score, setScore] = useState(0);
   const [currentProblem, setCurrentProblem] = useState({ num1: 0, num2: 0 });
   const [answer, setAnswer] = useState('');
+  const [problemCount, setProblemCount] = useState(0);
   const [gameOver, setGameOver] = useState(false);
+  const usedProblems = useRef<Set<string>>(new Set());
+  const timerRef = useRef<number>();
 
   // Redirect to onboarding if no user profile exists
   React.useEffect(() => {
@@ -21,38 +30,48 @@ function MultiplicationCountDownChallenge() {
   }, [navigate]);
 
   const generateProblem = useCallback(() => {
-    // Generate numbers between 2 and 9
-    const num1 = Math.floor(Math.random() * 11) + 2;
-    const num2 = Math.floor(Math.random() * 11) + 2;
+    if (problemCount >= TOTAL_PROBLEMS) return;
+    
+    let num1, num2, problemKey;
+    do {
+      num1 = Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1)) + MIN_NUMBER;
+      num2 = Math.floor(Math.random() * (MAX_NUMBER - MIN_NUMBER + 1)) + MIN_NUMBER;
+      problemKey = `${num1}x${num2}`;
+    } while (usedProblems.current.has(problemKey));
+
+    usedProblems.current.add(problemKey);
     setCurrentProblem({ num1, num2 });
+    setTimeLeft(TIME_PER_PROBLEM);
+    setAnswer('');
   }, []);
 
   useEffect(() => {
-    generateProblem();
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setGameOver(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [generateProblem]);
+    if (problemCount >= TOTAL_PROBLEMS) {
+      setGameOver(true);
+      const isNewHighScore = saveScore('multiplication_flash', score);
+      navigate(`/score/${score}/${isNewHighScore}`, { state: { from: 'flash' } });
+    } else {
+      generateProblem();
+    }
+  }, [problemCount, generateProblem, navigate, score]);
 
   useEffect(() => {
-    if (gameOver) {
-      // Get previous high score before saving
-      const previousHighScore = getHighScore('multiplication');
-      // Save score and check if it's a new high score
-      const isNewHighScore = saveScore('multiplication_count_down', score);
-      // Navigate with both score and high score status
-      navigate(`/score/${score}/${isNewHighScore}`, { state: { from: 'countdown' } });
+    if (problemCount < TOTAL_PROBLEMS && !gameOver) {
+      timerRef.current = window.setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setProblemCount(count => count + 1);
+            return TIME_PER_PROBLEM;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => {
+        if (timerRef.current) window.clearInterval(timerRef.current);
+      };
     }
-  }, [gameOver, navigate, score]);
+  }, [problemCount, gameOver]);
 
   const handleNumberClick = useCallback((num: string) => {
     setTimeout(() => {
@@ -62,7 +81,7 @@ function MultiplicationCountDownChallenge() {
         }
         return prev;
       });
-    }, 0);  // Delaying by 0ms to let state updates process asynchronously
+    }, 0);
   }, []);
 
   const handleClear = useCallback(() => {
@@ -76,11 +95,14 @@ function MultiplicationCountDownChallenge() {
   useEffect(() => {
     const correctAnswer = currentProblem.num1 * currentProblem.num2;
     if (parseInt(answer) === correctAnswer) {
-      setScore(prev => prev + 1);
-      setAnswer('');
-      generateProblem();
+      // Use setTimeout to prevent state updates during render
+      setTimeout(() => {
+        setScore(prev => prev + 1);
+        setProblemCount(count => count + 1);
+        setAnswer('');
+      }, 0);
     }
-  }, [answer, currentProblem.num1, currentProblem.num2, generateProblem]);
+  }, [answer, currentProblem.num1, currentProblem.num2]);
 
   return (
     <div className="h-[100dvh] bg-gradient-to-b from-blue-400 to-purple-500 flex flex-col">
@@ -94,6 +116,9 @@ function MultiplicationCountDownChallenge() {
           <Trophy className="w-4 h-4 text-yellow-500 mr-1" />
           <span className="font-bold text-lg">{score}</span>
         </div>
+        <div className="absolute right-16 top-1/2 transform -translate-y-1/2 text-sm text-gray-600">
+          {problemCount + 1}/{TOTAL_PROBLEMS}
+        </div>
         <button
           onClick={() => navigate('/multiplication-home')}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors"
@@ -101,6 +126,14 @@ function MultiplicationCountDownChallenge() {
         >
           <X className="w-6 h-6" />
         </button>
+      </div>
+
+      {/* Progress Bar */}
+      <div className="h-0 bg-gray-200 invisible">
+        <div 
+          className="h-full bg-purple-600 transition-all duration-1000"
+          style={{ width: `${(timeLeft / TIME_PER_PROBLEM) * 100}%` }}
+        />
       </div>
 
       {/* Main Content Area with flex-grow */}
@@ -162,4 +195,4 @@ function MultiplicationCountDownChallenge() {
   );
 }
 
-export default MultiplicationCountDownChallenge;
+export default MultiplicationFlashChallenge

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, Mail, User } from 'lucide-react';
+import { X, Mail, User, Phone } from 'lucide-react';
 import { getUserProfile } from '../utils/user';
 
 function ContactPage() {
@@ -45,6 +45,18 @@ function ContactPage() {
               <div className="text-sm font-medium text-purple-600 mb-1">Email</div>
               <div className="text-base font-semibold text-gray-900">
                 giovanniroos@gmail.com
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-purple-100 rounded-lg p-4">
+            <div className="bg-white w-10 h-10 rounded-full flex items-center justify-center shadow-sm mb-3 mx-auto">
+              <Phone className="w-6 h-6 text-purple-600" />
+            </div>
+            <div className="text-center">
+              <div className="text-sm font-medium text-purple-600 mb-1">Mobile</div>
+              <div className="text-base font-semibold text-gray-900">
+                0834607369
               </div>
             </div>
           </div>

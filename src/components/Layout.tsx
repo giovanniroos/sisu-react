@@ -7,7 +7,7 @@ function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
 
   // Don't show nav on multiplication challenge page
-  if (location.pathname === '/multiplication' || location.pathname === '/') {
+  if (location.pathname === '/multiplication' || location.pathname === '/multiplication-flash' || location.pathname === '/') {
     return <>{children}</>;
   }
 

@@ -19,7 +19,7 @@ function HomePage() {
     return null;
   }
 
-  const multiplicationHighScore = getHighScore('multiplication');
+  const multiplicationHighScore = getHighScore('multiplication_count_down');
   const divisionHighScore = getHighScore('division');
   const additionHighScore = getHighScore('addition');
   const subtractionHighScore = getHighScore('subtraction');
