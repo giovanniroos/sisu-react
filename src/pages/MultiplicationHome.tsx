@@ -2,9 +2,12 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Timer, Zap } from 'lucide-react';
 import { getUserProfile } from '../utils/user';
+import { getHighScore } from '../utils/scores';
 
 function MultiplicationHome() {
   const navigate = useNavigate();
+  const countdownHighScore = getHighScore('multiplication_count_down');
+  const flashHighScore = getHighScore('multiplication_flash');
 
   // Redirect to onboarding if no user profile exists
   React.useEffect(() => {
@@ -33,21 +36,31 @@ function MultiplicationHome() {
         </h1>
         
         <div className="w-full max-w-md space-y-4">
-          <button
-            onClick={() => navigate('/multiplication')}
-            className="w-full bg-white text-purple-600 rounded-lg px-6 py-4 font-bold hover:bg-gray-50 transition-colors shadow-lg flex items-center justify-center space-x-3"
-          >
-            <Timer className="w-6 h-6" />
-            <span>Count down challenge</span>
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={() => navigate('/multiplication')}
+              className="w-full bg-white text-purple-600 rounded-lg px-6 py-4 font-bold hover:bg-gray-50 transition-colors shadow-lg flex items-center justify-center space-x-3"
+            >
+              <Timer className="w-6 h-6" />
+              <span>Count down challenge</span>
+            </button>
+            <div className="text-center text-white/90 text-sm">
+              High Score: {countdownHighScore}
+            </div>
+          </div>
           
-          <button
-            onClick={() => navigate('/multiplication-flash')}
-            className="w-full bg-white text-purple-600 rounded-lg px-6 py-4 font-bold hover:bg-gray-50 transition-colors shadow-lg flex items-center justify-center space-x-3"
-          >
-            <Zap className="w-6 h-6" />
-            <span>Flash challenge</span>
-          </button>
+          <div className="space-y-2">
+            <button
+              onClick={() => navigate('/multiplication-flash')}
+              className="w-full bg-white text-purple-600 rounded-lg px-6 py-4 font-bold hover:bg-gray-50 transition-colors shadow-lg flex items-center justify-center space-x-3"
+            >
+              <Zap className="w-6 h-6" />
+              <span>Flash challenge</span>
+            </button>
+            <div className="text-center text-white/90 text-sm">
+              High Score: {flashHighScore}
+            </div>
+          </div>
           
           <button
             disabled
